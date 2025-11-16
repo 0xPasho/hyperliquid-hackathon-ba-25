@@ -1,0 +1,15 @@
+/* stylelint-disable */
+/* colors.css acts as an aggregator to provide both:
+   1) Light-theme CSS variables (defaults) via theme-variables.css
+   2) Legacy PostCSS $ variables via colors.legacy.pcss (processed by postcss-simple-vars)
+   Keeping $-vars in a separate .pcss file prevents editor CSS parsers from erroring on this file. */
+
+@import "./theme-variables.css";
+
+/* Import legacy $ variables so existing styles continue to build correctly */
+@import "./colors.legacy.pcss";
+
+/* No direct variable declarations here to minimize editor parse errors. All consumers should:
+   - Use CSS variables: var(--bg), var(--card-bg), var(--surface), var(--text-primary), etc.
+   - Existing files that still rely on $-vars will keep working through the import above.
+*/

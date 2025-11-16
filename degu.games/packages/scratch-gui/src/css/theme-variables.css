@@ -1,0 +1,80 @@
+/* Dark theme - Clean dark with magenta accents matching reference design */
+:root {
+  /* Surfaces - True dark/black backgrounds */
+  --bg: #000000; /* Pure black background */
+  --card-bg: #0A0A0F; /* Very dark gray-black for cards */
+  --surface: #141418; /* Slightly elevated dark surface */
+  --canvas-bg: #0A0A0F; /* Dark canvas */
+
+  /* Typography */
+  --text-primary: #FFFFFF; /* Pure white text */
+  --text-secondary: #B8B8C0; /* Light gray secondary text */
+  --text-muted: #6B6B75; /* Muted gray text */
+
+  /* Accents - Bright magenta/pink from reference */
+  --accent-pink: #FF00E5; /* Bright magenta (primary accent) */
+  --accent-purple: #D000FF; /* Bright purple */
+  --accent-magenta: #FF10D4; /* Hot magenta for highlights */
+  --accent-gradient-start: #FF00E5;
+  --accent-gradient-end: #D000FF;
+
+  /* Glows / overlays - Magenta focused */
+  --glow-accent: rgba(255, 0, 229, 0.4); /* Magenta glow */
+  --glow-pink: rgba(255, 16, 212, 0.35); /* Pink glow */
+  --neon-violet-glow: #D000FF; /* Neon purple */
+  --ambient-mauve: #0A0A0F; /* Dark ambient */
+  --ambient-purple: rgba(255, 0, 229, 0.05); /* Very subtle magenta ambient */
+
+  /* States - Clean accents */
+  --success: #00FF88; /* Green */
+  --warning: #FFB800; /* Golden yellow */
+  --error: #FF2E63; /* Hot pink-red */
+
+  /* Lines / disabled */
+  --divider: #1F1F28; /* Dark gray divider */
+  --disabled: #2A2A35; /* Muted dark gray disabled */
+
+  /* Hover / surface emphasis */
+  --hover: #1A1A22;
+  --hover-glow: rgba(255, 0, 229, 0.15);
+
+  /* Scrollbar - subtle dark purple */
+  --scrollbar: rgba(90, 60, 110, 0.35);
+  --scrollbar-hover: rgba(90, 60, 110, 0.45);
+
+  /* Shadows - Deep with magenta glow */
+  --shadow-sm: rgba(0, 0, 0, 0.6);
+  --shadow-md: rgba(0, 0, 0, 0.8);
+  --shadow-lg: rgba(0, 0, 0, 0.95);
+  --shadow-purple: rgba(208, 0, 255, 0.5);
+  --shadow-magenta: rgba(255, 0, 229, 0.4);
+
+  /* Overlays */
+  --overlay-light: rgba(255, 255, 255, 0.05);
+  --overlay-dark: rgba(0, 0, 0, 0.85);
+  --overlay-purple: rgba(208, 0, 255, 0.1);
+  --overlay-magenta: rgba(255, 0, 229, 0.1);
+
+  /* State tints and glows */
+  --warning-tint: rgba(255, 184, 0, 0.15);
+  --warning-glow: rgba(255, 184, 0, 0.4);
+  --success-tint: rgba(0, 255, 136, 0.15);
+  --success-glow: rgba(0, 255, 136, 0.4);
+  --error-tint: rgba(255, 46, 99, 0.15);
+  --error-glow: rgba(255, 46, 99, 0.4);
+  --purple-tint: rgba(208, 0, 255, 0.1);
+  --purple-glow: rgba(208, 0, 255, 0.3);
+  --pink-glow: rgba(255, 16, 212, 0.3);
+  --magenta-glow: rgba(255, 0, 229, 0.35);
+
+  /* Special effects - clean magenta accents */
+  --flash-success: #00FF88;
+  --border-neutral: #2A2A35;
+  --neon-border: rgba(255, 0, 229, 0.6);
+  --neon-border-bright: rgba(255, 0, 229, 0.9);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #FF00E5 0%, #D000FF 100%);
+  --gradient-surface: linear-gradient(180deg, #141418 0%, #0A0A0F 100%);
+  --gradient-glow: radial-gradient(circle, rgba(255, 0, 229, 0.15) 0%, transparent 70%);
+}

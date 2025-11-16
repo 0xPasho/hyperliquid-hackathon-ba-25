@@ -1,0 +1,151 @@
+{
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "blocks": {},
+      "comments": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "assetId": "cd21514d0531fdffb22204e0ec5ed84a",
+          "name": "backdrop1",
+          "md5ext": "cd21514d0531fdffb22204e0ec5ed84a.svg",
+          "dataFormat": "svg",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "layerOrder": 0,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null
+    },
+    {
+      "isStage": false,
+      "name": "Cat",
+      "variables": {
+        "score": ["score", 0]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "blocks": {
+        "event_whenflagclicked": {
+          "opcode": "event_whenflagclicked",
+          "next": "motion_goto",
+          "parent": null,
+          "inputs": {},
+          "fields": {},
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 48
+        },
+        "motion_goto": {
+          "opcode": "motion_goto",
+          "next": null,
+          "parent": "event_whenflagclicked",
+          "inputs": {
+            "TO": [1, "motion_goto_menu"]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "motion_goto_menu": {
+          "opcode": "motion_goto_menu",
+          "next": null,
+          "parent": "motion_goto",
+          "inputs": {},
+          "fields": {
+            "TO": ["_random_", null]
+          },
+          "shadow": true,
+          "topLevel": false
+        },
+        "event_whenkeypressed": {
+          "opcode": "event_whenkeypressed",
+          "next": "motion_movesteps",
+          "parent": null,
+          "inputs": {},
+          "fields": {
+            "KEY_OPTION": ["space", null]
+          },
+          "shadow": false,
+          "topLevel": true,
+          "x": 48,
+          "y": 200
+        },
+        "motion_movesteps": {
+          "opcode": "motion_movesteps",
+          "next": "data_changevariableby",
+          "parent": "event_whenkeypressed",
+          "inputs": {
+            "STEPS": [1, [4, "10"]]
+          },
+          "fields": {},
+          "shadow": false,
+          "topLevel": false
+        },
+        "data_changevariableby": {
+          "opcode": "data_changevariableby",
+          "next": null,
+          "parent": "motion_movesteps",
+          "inputs": {
+            "VALUE": [1, [4, "1"]]
+          },
+          "fields": {
+            "VARIABLE": ["score", "score"]
+          },
+          "shadow": false,
+          "topLevel": false
+        }
+      },
+      "comments": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "assetId": "b7853f557e4426412e64bb3da6531a99",
+          "name": "costume1",
+          "bitmapResolution": 1,
+          "md5ext": "b7853f557e4426412e64bb3da6531a99.svg",
+          "dataFormat": "svg",
+          "rotationCenterX": 48,
+          "rotationCenterY": 50
+        },
+        {
+          "assetId": "e6ddc55a6ddd9cc9d84fe0b4c21e016f",
+          "name": "costume2",
+          "bitmapResolution": 1,
+          "md5ext": "e6ddc55a6ddd9cc9d84fe0b4c21e016f.svg",
+          "dataFormat": "svg",
+          "rotationCenterX": 46,
+          "rotationCenterY": 53
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "layerOrder": 1
+    }
+  ],
+  "monitors": [],
+  "extensions": [],
+  "meta": {
+    "semver": "3.0.0",
+    "vm": "0.2.0",
+    "agent": "Mozilla/5.0"
+  }
+}

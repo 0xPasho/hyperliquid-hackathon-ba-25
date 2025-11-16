@@ -1,0 +1,27 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.tag-button {
+    padding: .625rem 1rem;
+    background: var(--surface, #141418);
+    border-radius: 1.375rem;
+    color: var(--text-primary, #FFFFFF);
+    height: $library-filter-bar-height;
+    border: 1px solid var(--divider, #1F1F28);
+    transition: all 0.2s ease;
+}
+
+.tag-button:hover {
+    background: var(--hover, #1A1A22);
+    border-color: var(--accent-pink, #FF00E5);
+}
+
+.tag-button-icon {
+    max-width: 1rem;
+    max-height: 1rem;
+}
+
+.active {
+    background: var(--accent-pink, #FF00E5);
+    border-color: var(--accent-pink, #FF00E5);
+}

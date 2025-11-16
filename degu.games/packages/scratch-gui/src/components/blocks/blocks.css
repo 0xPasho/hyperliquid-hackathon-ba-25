@@ -1,0 +1,379 @@
+@import "../../css/units.css";
+@import "../../css/colors.css";
+@import "../../css/z-index.css";
+
+.blocks {
+    height: 100%;
+    /* Workspace base background - true dark/black */
+    background-color: var(--canvas-bg, #0A0A0F) !important;
+
+    /* Grid variables (bright white dots) */
+    --grid-spacing: 24px;
+    --grid-dot-core: rgba(255, 255, 255, 0.25); /* bright white dot */
+    --grid-dot-glow: rgba(255, 255, 255, 0.15); /* white glow */
+    --grid-dot-core-size: 1px;
+    --grid-dot-glow-size: 1px;
+}
+
+.drag-over:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.75;
+    background-color: var(--glow-accent, rgba(180, 0, 255, 0.25));
+    transition: all 0.25s ease;
+}
+
+.blocks :global(.injectionDiv){
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    /* Subtle dark border */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    box-shadow: none;
+    background-color: var(--canvas-bg, #0A0A0F) !important;
+}
+
+[dir="rtl"] .blocks :global(.injectionDiv) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.blocks :global(.blocklyMainBackground) {
+    stroke: none;
+    /* Transparent so CSS grid on the svg shows through */
+    fill: transparent !important;
+}
+
+.blocks :global(.blocklyWorkspace) {
+    /* Transparent so the svg background (with grid) is visible */
+    background-color: transparent !important;
+}
+
+.blocks :global(.blocklySvg) {
+    /* Base true dark/black with subtle dotted grid */
+    background-color: var(--canvas-bg, #0A0A0F) !important;
+    background-image:
+        radial-gradient(var(--grid-dot-core) var(--grid-dot-core-size), transparent var(--grid-dot-core-size)),
+        radial-gradient(var(--grid-dot-glow) var(--grid-dot-glow-size), transparent var(--grid-dot-glow-size)),
+        radial-gradient(var(--grid-dot-core) var(--grid-dot-core-size), transparent var(--grid-dot-core-size)),
+        radial-gradient(var(--grid-dot-glow) var(--grid-dot-glow-size), transparent var(--grid-dot-glow-size));
+    background-size:
+        var(--grid-spacing) var(--grid-spacing),
+        var(--grid-spacing) var(--grid-spacing),
+        var(--grid-spacing) var(--grid-spacing),
+        var(--grid-spacing) var(--grid-spacing);
+    /* Second pair offset by half spacing for a denser diamond feel */
+    background-position:
+        0 0,
+        0 0,
+        calc(var(--grid-spacing) / 2) calc(var(--grid-spacing) / 2),
+        calc(var(--grid-spacing) / 2) calc(var(--grid-spacing) / 2);
+}
+
+/* Semi-transparent fills with bright colored borders */
+.blocks :global(.blocklySvg .blocklyPath) {
+    paint-order: stroke fill !important;
+    stroke-width: 2px !important;       /* visible bright border */
+    /* fill and stroke colors come from Blockly's color system */
+    /* Force using fill-opacity to make fills semi-transparent */
+    fill-opacity: 0.15 !important;
+}
+/* Remove shading layers for clean look */
+.blocks :global(.blocklySvg .blocklyPathLight),
+.blocks :global(.blocklySvg .blocklyPathDark) {
+    display: none !important;
+}
+
+.blocks :global(.blocklyToolboxDiv) {
+    background-color: var(--card-bg, #0A0A0F) !important;
+    border-right: 1px solid var(--divider, #1F1F28);
+    border-bottom: 1px solid var(--divider, #1F1F28);
+    box-sizing: content-box;
+    height: calc(100% - 3.25rem) !important;
+
+    /*
+        For now, the layout cannot support scrollbars in the category menu.
+        The line below works for Edge, the `::-webkit-scrollbar` line
+        below that is for webkit browsers. It isn't possible to do the
+        same for Firefox, so a different solution may be needed for them.
+    */
+    -ms-overflow-style: none;
+}
+
+[dir="rtl"] .blocks :global(.blocklyToolboxDiv) {
+    border-right: none;
+    border-left: 1px solid rgba(176, 0, 255, 0.35);
+}
+
+.blocks :global(.blocklyToolboxDiv::-webkit-scrollbar) {
+    display: none;
+}
+
+.blocks :global(.blocklyFlyout) {
+    background-color: var(--card-bg, #0A0A0F) !important;
+    border-right: 1px solid var(--divider, #1F1F28);
+    box-sizing: content-box;
+}
+
+[dir="rtl"] .blocks :global(.blocklyFlyout) {
+    border-right: none;
+    border-left: 1px solid var(--divider, #222233);
+}
+
+
+/* Workspace + Flyout scrollbars */
+.blocks :global(.blocklyScrollbarVertical),
+.blocks :global(.blocklyScrollbarHorizontal) {
+    fill: transparent !important; /* hide track */
+}
+.blocks :global(.blocklyScrollbarKnob) {
+    fill: rgba(90, 60, 110, 0.35) !important; /* subtle dark purple knob */
+    rx: 6px; ry: 6px;
+}
+
+/* Drag surface on top of grid */
+.blocks :global(.blocklyBlockDragSurface) {
+    /*
+        Fix an issue where the drag surface was preventing hover events for sharing blocks.
+        This does not prevent user interaction on the blocks themselves.
+    */
+    pointer-events: none;
+    z-index: 1000; /* make blocks match gui drag layer */
+}
+
+/*
+    Shrink category font to fit "My Blocks" for now.
+    Probably will need different solutions for language support later, so
+    make the change here instead of in scratch-blocks.
+*/
+.blocks :global(.scratchCategoryMenuItemLabel) {
+    font-size: 0.65rem;
+    color: #FFFFFF !important; /* Pure white text */
+}
+
+.blocks :global(.scratchCategoryMenuItem) {
+    background-color: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.blocks :global(.scratchCategoryMenuItem):hover {
+    background-color: var(--hover-glow, rgba(255, 0, 229, 0.15)) !important;
+    border-color: var(--neon-border, rgba(255, 0, 229, 0.5)) !important;
+}
+
+.blocks :global(.scratchCategoryItemBubble) {
+    /* Category icon circles - bordered style matching blocks */
+    opacity: 0.2 !important; /* Very low fill opacity */
+    stroke-opacity: 1 !important;
+    stroke-width: 2px !important;
+}
+
+.blocks :global(.blocklyFlyoutBackground) {
+    fill: var(--card-bg, #0A0A0F) !important;
+    fill-opacity: 1 !important;
+}
+
+.blocks :global(.blocklyFlyoutLabelText) {
+    fill: #FFFFFF !important; /* Pure white text */
+}
+
+.blocks :global(.blocklyText) {
+    fill: #FFFFFF !important; /* Pure white text on all blocks */
+}
+
+.blocks :global(.blocklyEditableText) {
+    fill: #FFFFFF !important; /* Pure white text in editable fields */
+}
+
+.blocks :global(.blocklyDropDownText) {
+    fill: #FFFFFF !important; /* Pure white text in dropdowns */
+}
+
+.blocks :global(.blocklyNonEditableText) {
+    fill: #FFFFFF !important; /* Pure white text on non-editable */
+}
+
+.blocks :global(.blocklyEditableText) > .blocklyTextOutline {
+    fill: none !important; /* Remove outline shadow */
+}
+
+.blocks :global(.blocklyMinimalBody) {
+    min-width: auto;
+    min-height: auto;
+}
+
+/* ----- Overrides to exactly match requested look: bright white dots + dark sidenav ----- */
+
+/* Bright white grid dots */
+.blocks :global(.blocklySvg) {
+    background-image:
+        radial-gradient(rgba(255,255,255,0.25) 1px, transparent 1px) !important;
+    background-size: var(--grid-spacing) var(--grid-spacing) !important;
+    background-position: 0 0 !important;
+}
+
+/* Make toolbox/category sidenav true dark */
+.blocks :global(.scratchCategoryMenu),
+.blocks :global(.scratchCategoryMenuScroller),
+.blocks :global(.blocklyToolboxDiv) {
+    background-color: var(--card-bg, #0A0A0F) !important;
+}
+
+/* Subtle dark purple scrollbars matching reference (WebKit) */
+.blocks :global(.scratchCategoryMenu::-webkit-scrollbar),
+.blocks :global(.blocklyFlyout::-webkit-scrollbar),
+.blocks :global(.injectionDiv::-webkit-scrollbar) {
+    width: 8px;
+    height: 8px;
+    background: var(--card-bg, #0A0A0F) !important;
+}
+.blocks :global(.scratchCategoryMenu::-webkit-scrollbar-thumb),
+.blocks :global(.blocklyFlyout::-webkit-scrollbar-thumb),
+.blocks :global(.injectionDiv::-webkit-scrollbar-thumb) {
+    background: rgba(90, 60, 110, 0.35);
+    border-radius: 8px;
+}
+
+/* Subtle dark purple SVG scrollbars (Firefox/other) */
+.blocks :global(.blocklyScrollbarHorizontal),
+.blocks :global(.blocklyScrollbarVertical),
+.blocks :global(.blocklyScrollbarBackground) {
+    fill: var(--surface, #141418) !important; /* dark track */
+}
+.blocks :global(.blocklyScrollbarKnob),
+.blocks :global(.blocklyScrollbarHandle) {
+    fill: rgba(90, 60, 110, 0.35) !important; /* subtle dark purple knob */
+    stroke: rgba(90, 60, 110, 0.25) !important;
+    rx: 6px; ry: 6px;
+}
+
+/* ----- Border-only controls for blocks: match reference (no filled forms) ----- */
+/* Make fields (number/text inputs, dropdowns, etc.) transparent with a visible border */
+.blocks :global(.blocklyEditableText > rect),
+.blocks :global(.blocklyDropdownRect),
+.blocks :global(.blocklyFieldRect),
+.blocks :global(.blocklyDropdownBorder) {
+    fill: rgba(255, 255, 255, 0.05) !important;  /* Very subtle fill */
+    stroke: rgba(255,255,255,0.4) !important;  /* Softer white border */
+    stroke-width: 1.5px !important;
+    rx: 6px; ry: 6px; /* rounded corners like mock */
+}
+/* Tweak dropdown/field text color to stay legible on transparent backgrounds */
+.blocks :global(.blocklyDropDownText),
+.blocks :global(.blocklyEditableText),
+.blocks :global(.blocklyNonEditableText) {
+    fill: #FFFFFF !important;
+}
+
+/* Remove shading layers for clean look */
+.blocks :global(.blocklySvg .blocklyPathLight),
+.blocks :global(.blocklySvg .blocklyPathDark) {
+    display: none !important;
+}
+
+/* Solid colored blocks with darker borders */
+.blocks :global(.blocklySvg .blocklyPath) {
+    paint-order: stroke fill;
+}
+
+/* ----- Semi-transparent fills with bright colored borders ----- */
+
+/* Main block path in workspace, flyout, dragging, and selected states */
+.blocks :global(.blocklySvg .blocklyPath),
+.blocks :global(.blocklyFlyout .blocklyPath),
+.blocks :global(.blocklyDragging .blocklyPath),
+.blocks :global(.blocklySelected .blocklyPath) {
+  /* Don't override fill or stroke - let Blockly set them from theme colors */
+  stroke-width: 2px !important;
+  stroke-linejoin: round !important;
+  stroke-linecap: round !important;
+  paint-order: stroke fill !important;
+  fill-opacity: 0.15 !important; /* Make fills semi-transparent */
+  stroke-opacity: 1 !important; /* Keep borders fully opaque */
+}
+
+/* Remove all shading/highlight layers */
+.blocks :global(.blocklyPathLight),
+.blocks :global(.blocklyPathDark),
+.blocks :global(.blocklyPathGlow),
+.blocks :global(.blocklyPathShadow) {
+  display: none !important;
+}
+
+/* Selected block: slightly stronger stroke with glow */
+.blocks :global(.blocklySelected .blocklyPath) {
+  stroke-width: 2.5px !important;
+  fill-opacity: 0.25 !important; /* Slightly more visible when selected */
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+/* Disabled blocks: faint appearance */
+.blocks :global(.blocklyDisabled .blocklyPath) {
+  opacity: 0.4 !important;
+  stroke-width: 2px !important;
+}
+
+/* Flyout background */
+.blocks :global(.blocklyFlyoutBackground) {
+  fill: var(--card-bg, #0A0A0F) !important;
+  fill-opacity: 1 !important;
+}
+
+/* Field controls (inputs, dropdowns, color pickers): transparent interior, bordered frames */
+.blocks :global(.blocklyEditableText > rect),
+.blocks :global(.blocklyDropdownRect),
+.blocks :global(rect.blocklyFieldRect),
+.blocks :global(.blocklyDropdownBackground),
+.blocks :global(.blocklyDropdownMenu .goog-menu) {
+  fill: rgba(255, 255, 255, 0.05) !important;  /* Very subtle fill */
+  stroke: rgba(255,255,255,0.4) !important;
+  stroke-width: 1.5px !important;
+  rx: 6px; ry: 6px;
+}
+
+/* Inline HTML input for text/number fields: transparent background with border */
+.blocks :global(.blocklyHtmlInput) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid rgba(255,255,255,0.4) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Dropdown arrow/button containers: border-only, no fill */
+.blocks :global(.blocklyDropdownDiv),
+.blocks :global(.blocklyWidgetDiv .goog-menu) {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.35) !important;
+  box-shadow: none !important;
+}
+
+/* Block paths with solid fills */
+.blocks :global(.blocklySvg .blocklyPath) {
+  /* fill and stroke colors are set by Blockly from theme */
+}
+
+/* Keep connection previews unobtrusive but border-only */
+.blocks :global(.blocklyConnectionIndicator) {
+  fill: transparent !important;
+  stroke: rgba(255,255,255,0.5) !important;
+  stroke-width: 2px !important;
+}
+
+/* Tweak z-order so borders remain crisp on hover/drag */
+.blocks :global(.blocklyDragging) {
+  isolation: isolate;
+}

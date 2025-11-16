@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  walletAddress String?        @unique // Optional - users can link wallet later
+  email         String?
+  name          String?
+  bio           String?
+  profileImage  String?
+  headerImage   String?
+  websiteUrl    String?
+  twitterUrl    String?
+  discordUrl    String?
+  telegramUrl   String?
+  authProvider  String         // "google", "twitter", "discord", "email", "wallet"
+  privyId       String?        @unique // Privy user ID - primary identifier for authentication
+  deviceId      String?        // Keep for backward compatibility
+  deviceInfo    String?
+  isVerified    Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  projects      Project[]
+  comments      Comment[]
+  roomComments  RoomComment[]
+  likes         Like[]
+  followers     Follow[]       @relation("UserFollowers")
+  following     Follow[]       @relation("UserFollowing")
+  profileViews  ProfileView[]
+  hostedRooms   Room[]         @relation("RoomHost")
+  roomPlayers   RoomPlayer[]   @relation("RoomPlayers")
+  wonRooms      Room[]         @relation("RoomWinner")
+  activities    Activity[]
+
+  @@map("users")
+}
+
+model Project {
+  id                String    @id @default(cuid())
+  title             String    @default("Untitled")
+  description       String?
+  instructions      String?
+  projectData       Json
+  tags              String[]  @default([])
+  viewCount         Int       @default(0)
+  websiteUrl        String?
+  twitterUrl        String?
+  discordUrl        String?
+  headerImage       String?   // Horizontal header image
+  thumbnailImage    String?   // Thumbnail for preview
+  isVerified        Boolean   @default(false)
+  isPublic          Boolean   @default(false)
+
+  // Multiplayer settings
+  isMultiplayer     Boolean?  // null = not set, false = no, true = yes
+  minPlayers        Int?      // Minimum players required to start game
+  maxPlayers        Int?      // Maximum players allowed in game
+  gameMode          Int?      // 0=WinnerTakesAll, 1=FreeForAll, 2=ScoreBased
+
+  // Blockchain multiplayer settings (GameEscrow integration)
+  tokenAddress      String?   // ERC20 token for entry fee (e.g., USDC on Base)
+  entryFee          String?   // Entry fee in wei (stored as string to handle BigInt)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  userId            String?
+  user              User?     @relation(fields: [userId], references: [id])
+  comments          Comment[]
+  likes             Like[]
+  views             View[]
+  rooms             Room[]
+
+  @@index([userId])
+  @@index([isPublic])
+  @@map("projects")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@map("comments")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+  @@map("likes")
+}
+
+model View {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sessionId  String   // Browser session ID to prevent spam
+  ipAddress  String?  // Optional: IP address for additional tracking
+
+  @@unique([projectId, sessionId])
+  @@index([projectId])
+  @@map("views")
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower    User     @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
+}
+
+model ProfileView {
+  id        String   @id @default(cuid())
+  userId    String
+  sessionId String
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sessionId])
+  @@index([userId])
+  @@map("profile_views")
+}
+
+model Room {
+  id                String        @id @default(cuid())
+  name              String        @default("Game Room")
+  projectId         String
+  hostId            String
+  maxPlayers        Int           @default(4)
+  currentPlayers    Int           @default(1)
+  status            RoomStatus    @default(WAITING)
+  blockchainGameId  String?       // ID from GameEscrow contract
+  isPrivate         Boolean       @default(false)
+  password          String?
+
+  // Blockchain/payment configuration
+  chainId           Int?          // Blockchain network (84532=Base Sepolia, 80002=Polygon Amoy, 421614=Arbitrum Sepolia)
+  networkName       String?       // Human-readable network name (Base, Polygon, Arbitrum)
+  tokenAddress      String?       // ERC20 token address (e.g., USDC on Base)
+  tokenSymbol       String?       // Token symbol (USDC, ETH, MATIC)
+  entryFee          String?       // Entry fee in token units (as string to handle decimals)
+  entryFeeUsd       String?       // Approximate USD value at creation time
+  gameMode          Int?          // 0=WinnerTakesAll, 1=TeamBattle, 2=FreeForAll, 3=ScoreBased
+  teams             Int?          // Number of teams (for TeamBattle mode)
+  prizePercentages  Int[]         @default([100]) // Prize distribution percentages
+
+  // VM Server integration
+  vmServerUrl       String?       // WebSocket URL for game streaming
+  vmQueuePosition   Int?          // Position in VM server queue
+  vmStatus          String?       // ready, queued, playing, error
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  startedAt         DateTime?
+  completedAt       DateTime?
+  winnerId          String?       // User ID of the winner
+
+  project           Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  host              User          @relation("RoomHost", fields: [hostId], references: [id], onDelete: Cascade)
+  players           RoomPlayer[]
+  comments          RoomComment[]
+  winner            User?         @relation("RoomWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([hostId])
+  @@index([status])
+  @@index([blockchainGameId])
+  @@map("rooms")
+}
+
+model RoomPlayer {
+  id              String    @id @default(cuid())
+  roomId          String
+  userId          String
+  seatNumber      Int?      // Optional seat number (0-indexed, e.g., 0-3 for 4-player game)
+  joinedAt        DateTime  @default(now())
+  leftAt          DateTime?
+  isReady         Boolean   @default(false)
+  walletAddress   String?
+  hasPaid         Boolean   @default(false)
+  paidAt          DateTime?
+
+  room            Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user            User      @relation("RoomPlayers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@index([roomId])
+  @@index([userId])
+  @@map("room_players")
+}
+
+model RoomComment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@index([userId])
+  @@map("room_comments")
+}
+
+model Activity {
+  id            String       @id @default(cuid())
+  userId        String
+  type          ActivityType
+  targetId      String?      // ID of the related entity (projectId, userId, commentId, etc)
+  targetType    String?      // "project", "user", "comment", "room"
+  metadata      Json?        // Additional data (project title, comment content preview, etc)
+  createdAt     DateTime     @default(now())
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@map("activities")
+}
+
+enum ActivityType {
+  LIKE_PROJECT
+  COMMENT_PROJECT
+  COMMENT_ROOM
+  FOLLOW_USER
+  UNFOLLOW_USER
+  CREATE_PROJECT
+  UPDATE_PROJECT
+  VIEW_PROJECT
+  JOIN_ROOM
+  CREATE_ROOM
+  WIN_GAME
+  LOSE_GAME
+  COMPLETE_GAME
+}
+
+enum RoomStatus {
+  WAITING   // Waiting for players
+  READY     // All players ready
+  PLAYING   // Game in progress
+  COMPLETED // Game finished
+  CANCELLED // Game cancelled
+}
